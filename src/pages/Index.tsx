@@ -14,12 +14,9 @@ const Index = () => {
           <Link to="/login" className="px-4 py-2 bg-blue-600 text-white rounded">
             Entrar
           </Link>
-          <Link to="/calendar" className="px-4 py-2 border rounded">
-            Ver calendário
-          </Link>
-          <Link to="/setup" className="px-4 py-2 border rounded">
+          {/* <Link to="/setup" className="px-4 py-2 border rounded">
             Configuração Inicial
-          </Link>
+          </Link> */}
         </div>
       </div>
       <MadeWithDyad />
