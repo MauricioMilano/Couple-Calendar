@@ -108,14 +108,6 @@ const Setup: React.FC = () => {
             >
               Criar
             </button>
-
-            <button
-              type="button"
-              onClick={() => navigate("/")}
-              className="px-4 py-2 border rounded-md"
-            >
-              Verificar App
-            </button>
           </div>
 
           <p className="text-sm text-gray-500 mt-3" aria-live="polite">{msg}</p>

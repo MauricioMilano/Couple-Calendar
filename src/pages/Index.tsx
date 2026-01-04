@@ -1,7 +1,53 @@
+import React, { useEffect, useState } from "react";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Index = () => {
+const Index: React.FC = () => {
+  const navigate = useNavigate();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    const check = async () => {
+      try {
+        const res = await fetch("/api/setup/status");
+        if (!res.ok) {
+          // if request fails, keep showing default index so user can try to access
+          if (mounted) setChecking(false);
+          return;
+        }
+        const json = await res.json();
+        if (mounted) {
+          if (json?.configured) {
+            // app configured -> go to authentication page (login). Auth provider will redirect to /calendar if already logged in
+            navigate("/login", { replace: true });
+          } else {
+            // not configured -> go to setup
+            navigate("/setup", { replace: true });
+          }
+        }
+      } catch (err) {
+        if (mounted) setChecking(false);
+      }
+    };
+
+    check();
+    return () => {
+      mounted = false;
+    };
+  }, [navigate]);
+
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-pulse text-gray-500">Verificando configuração...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // fallback UI (shouldn't be visible because we navigate away once status is known)
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="text-center">
@@ -11,15 +57,9 @@ const Index = () => {
         </p>
 
         <div className="space-x-3">
-          <Link to="/login" className="px-4 py-2 bg-blue-600 text-white rounded">
-            Entrar
-          </Link>
-          {/* <Link to="/setup" className="px-4 py-2 border rounded">
-            Configuração Inicial
-          </Link> */}
+          <button onClick={() => navigate('/login')} className="px-4 py-2 bg-blue-600 text-white rounded">Entrar</button>
         </div>
       </div>
-      <MadeWithDyad />
     </div>
   );
 };

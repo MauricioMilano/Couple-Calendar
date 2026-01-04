@@ -2,6 +2,17 @@ import express from "express";
 import { hashPin, createPartner, partnersCount } from "../models/partners.js";
 const router = express.Router();
 
+// Return whether the application was already configured (partners exist)
+router.get("/status", async (req, res) => {
+  try {
+    const count = partnersCount();
+    return res.json({ configured: count > 0, count });
+  } catch (err) {
+    console.error("Error checking setup status:", err);
+    return res.status(500).json({ error: "Failed to check setup status", code: "ERR_STATUS_FAILED" });
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
     const count = partnersCount();
