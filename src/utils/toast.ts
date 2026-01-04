@@ -12,6 +12,8 @@ export const showLoading = (message: string) => {
   return toast.loading(message);
 };
 
-export const dismissToast = (toastId: string) => {
-  toast.dismiss(toastId);
+// Accept string | number | undefined since sonner may return either
+export const dismissToast = (toastId?: string | number) => {
+  // sonner's dismiss accepts the id or no args; cast to any to avoid type mismatch
+  toast.dismiss(toastId as any);
 };
