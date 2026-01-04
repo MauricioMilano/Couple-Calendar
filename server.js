@@ -40,7 +40,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/events", eventsRouter);
 
 // Serve manifest and service-worker and other assets from /public automatically
-const publicDir = path.join(process.cwd(), "public");
+const publicDir = path.join(process.cwd(), "dist");
 app.use(express.static(publicDir));
 
 // Root handling: if no partners exist, serve setup.html, else serve index.html
@@ -60,10 +60,11 @@ app.get("/", async (req, res, next) => {
 });
 
 // SPA fallback for non-API routes -> serve index.html (when app configured)
-app.get("*", (req, res) => {
-  if (req.path.startsWith("/api/")) {
-    return res.status(404).json({ error: "Not found", code: "ERR_NOT_FOUND" });
-  }
+app.use((req, res, next) => {
+  // only handle GET requests here (let API routes and others pass through)
+  if (req.method !== "GET") return next();
+  if (req.path.startsWith("/api/")) return next();
+
   const indexFile =
     partnersCount() === 0
       ? path.join(publicDir, "setup.html")

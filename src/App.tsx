@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Calendar from "./pages/Calendar";
+import Setup from "./pages/Setup";
 import { AuthProvider } from "./context/AuthProvider";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -30,6 +31,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route path="/setup" element={<Setup />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

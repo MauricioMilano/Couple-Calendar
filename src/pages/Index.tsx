@@ -17,6 +17,9 @@ const Index = () => {
           <Link to="/calendar" className="px-4 py-2 border rounded">
             Ver calendário
           </Link>
+          <Link to="/setup" className="px-4 py-2 border rounded">
+            Configuração Inicial
+          </Link>
         </div>
       </div>
       <MadeWithDyad />
