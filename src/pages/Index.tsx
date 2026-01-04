@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const Index: React.FC = () => {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
+  const [configured, setConfigured] = useState<boolean | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -22,8 +23,9 @@ const Index: React.FC = () => {
             // app configured -> go to authentication page (login). Auth provider will redirect to /calendar if already logged in
             navigate("/login", { replace: true });
           } else {
-            // not configured -> go to setup
-            navigate("/setup", { replace: true });
+            // not configured -> show landing that explains the first setup
+            setConfigured(false);
+            setChecking(false);
           }
         }
       } catch (err) {
@@ -47,17 +49,38 @@ const Index: React.FC = () => {
     );
   }
 
-  // fallback UI (shouldn't be visible because we navigate away once status is known)
+  // If configured is true we already redirected. If it's false, show the first-setup landing page
+  if (configured) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Couple Calendar</h1>
-        <p className="text-xl text-gray-600 mb-6">
-          Gerencie eventos compartilhados com seu parceiro(a).
+      <div className="max-w-xl w-full text-center p-6 bg-white rounded-lg shadow">
+        <h1 className="text-3xl font-bold mb-4">Calendário de Casal — Primeiro Acesso</h1>
+        <p className="text-gray-700 mb-6">
+          Bem-vindo(a)! Este é um protótipo do Calendário de Casal. Antes de começar, precisamos realizar a configuração inicial para criar as contas dos parceiros.
+          Clique no botão abaixo para iniciar o setup.
         </p>
 
-        <div className="space-x-3">
-          <button onClick={() => navigate('/login')} className="px-4 py-2 bg-blue-600 text-white rounded">Entrar</button>
+        <div className="flex justify-center gap-3">
+          <button
+            onClick={() => navigate('/setup')}
+            className="px-4 py-2 bg-[#5f2f89] text-white rounded border-2 border-[#f4b135] hover:bg-[#f4b135] hover:text-[#5f2f89]"
+          >
+            Iniciar configuração
+          </button>
+
+          <button
+            onClick={() => navigate('/login')}
+            className="px-4 py-2 bg-transparent text-[#5f2f89] border-2 border-[#5f2f89] rounded hover:bg-[#5f2f89] hover:text-white"
+          >
+            Entrar
+          </button>
+        </div>
+
+        <div className="mt-6">
+          <MadeWithDyad />
         </div>
       </div>
     </div>
