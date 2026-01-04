@@ -18,6 +18,18 @@ type Props = {
   onCancelled?: () => void;
 };
 
+const toIsoUtc = (localDatetime: string) => {
+  // datetime-local produces "YYYY-MM-DDTHH:mm" (no timezone).
+  // Construct Date and convert to ISO (UTC, with Z).
+  if (!localDatetime) return localDatetime;
+  const d = new Date(localDatetime);
+  if (isNaN(d.getTime())) {
+    // fallback: return original string
+    return localDatetime;
+  }
+  return d.toISOString();
+};
+
 const EventForm: React.FC<Props> = ({ existing = null, onSaved, onCancelled }) => {
   const [title, setTitle] = useState(existing?.title || "");
   const [description, setDescription] = useState(existing?.description || "");
@@ -45,8 +57,9 @@ const EventForm: React.FC<Props> = ({ existing = null, onSaved, onCancelled }) =
     const payload = {
       title,
       description,
-      start_iso: startIso,
-      end_iso: endIso,
+      // Convert datetime-local to full ISO/UTC to store consistently
+      start_iso: toIsoUtc(startIso),
+      end_iso: toIsoUtc(endIso),
       all_day: allDay ? 1 : 0,
     };
 
@@ -68,13 +81,13 @@ const EventForm: React.FC<Props> = ({ existing = null, onSaved, onCancelled }) =
           });
 
       if (!res.ok) {
-        const json = await res.json();
+        const json = await res.json().catch(() => ({}));
         showError(json?.error || "Erro ao salvar evento");
         return;
       }
 
       const json = await res.json();
-      const saved = existing ? json.event : json.event;
+      const saved = json.event;
       showSuccess("Salvo com sucesso");
       onSaved(saved);
     } catch (err) {
@@ -106,7 +119,7 @@ const EventForm: React.FC<Props> = ({ existing = null, onSaved, onCancelled }) =
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="block text-sm font-medium">Início (ISO)</label>
+          <label className="block text-sm font-medium">Início (local)</label>
           <input
             type="datetime-local"
             className="mt-1 w-full border rounded px-2 py-1"
@@ -115,7 +128,7 @@ const EventForm: React.FC<Props> = ({ existing = null, onSaved, onCancelled }) =
           />
         </div>
         <div>
-          <label className="block text-sm font-medium">Fim (ISO)</label>
+          <label className="block text-sm font-medium">Fim (local)</label>
           <input
             type="datetime-local"
             className="mt-1 w-full border rounded px-2 py-1"

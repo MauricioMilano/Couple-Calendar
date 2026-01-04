@@ -1,20 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 
 const Login: React.FC = () => {
   const [name, setName] = useState("");
   const [pin, setPin] = useState("");
-  const { login } = useAuth();
+  const { login, partner, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // If already logged in, redirect to calendar
+    if (!loading && partner) {
+      navigate("/calendar");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [partner, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await login({ name, pin });
-      navigate("/calendar");
+      // redirect back to original page if provided
+      const from = (location.state as any)?.from?.pathname || "/calendar";
+      navigate(from);
     } catch (err) {
       // errors are shown by the auth provider via toasts
     }
