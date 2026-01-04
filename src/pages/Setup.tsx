@@ -50,19 +50,19 @@ const Setup: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl">
-        <h2 className="text-2xl font-semibold">Configuração Inicial</h2>
+      <div className="bg-white rounded-lg shadow-md w-full max-w-lg sm:max-w-xl md:max-w-2xl p-6 sm:p-8">
+        <h2 className="text-2xl md:text-3xl font-semibold">Configuração Inicial</h2>
         <p className="text-sm text-gray-500 mt-1">Cadastre os dois parceiros (nome + PIN). PIN mínimo 4 caracteres.</p>
 
-        <form onSubmit={handleSubmit} className="mt-4">
+        <form onSubmit={handleSubmit} className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div className="p-4 bg-gray-50 rounded-md">
               <label className="block text-sm font-medium">Nome Parceiro 1</label>
               <input
                 aria-label="Nome Parceiro 1"
                 value={p1name}
                 onChange={(e) => setP1name(e.target.value)}
-                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2"
+                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#5f2f89] transition"
                 required
               />
 
@@ -72,19 +72,19 @@ const Setup: React.FC = () => {
                 aria-label="PIN Parceiro 1"
                 value={p1pin}
                 onChange={(e) => setP1pin(e.target.value)}
-                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2"
+                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#5f2f89] transition"
                 required
                 minLength={4}
               />
             </div>
 
-            <div>
+            <div className="p-4 bg-gray-50 rounded-md">
               <label className="block text-sm font-medium">Nome Parceiro 2</label>
               <input
                 aria-label="Nome Parceiro 2"
                 value={p2name}
                 onChange={(e) => setP2name(e.target.value)}
-                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2"
+                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#5f2f89] transition"
                 required
               />
 
@@ -94,23 +94,23 @@ const Setup: React.FC = () => {
                 aria-label="PIN Parceiro 2"
                 value={p2pin}
                 onChange={(e) => setP2pin(e.target.value)}
-                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2"
+                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#5f2f89] transition"
                 required
                 minLength={4}
               />
             </div>
           </div>
 
-          <div className="flex gap-2 mt-4">
+          <div className="flex flex-col md:flex-row gap-2 mt-4 items-stretch md:items-center md:justify-end">
             <button
               type="submit"
-              className="px-4 py-2 bg-[#111827] text-white rounded-md"
+              className="w-full md:w-auto px-4 py-2 bg-[#111827] text-white rounded-md hover:opacity-95 transition"
             >
               Criar
             </button>
           </div>
 
-          <p className="text-sm text-gray-500 mt-3" aria-live="polite">{msg}</p>
+          <p className="text-sm text-gray-500 mt-3 text-center md:text-left" aria-live="polite">{msg}</p>
         </form>
       </div>
     </div>

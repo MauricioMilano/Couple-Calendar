@@ -2,7 +2,6 @@ const CACHE_NAME = 'casalcal-v1';
 const CORE_ASSETS = [
   '/',
   '/index.html',
-  '/setup.html',
   '/manifest.json',
 ];
 
