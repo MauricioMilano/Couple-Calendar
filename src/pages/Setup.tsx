@@ -68,10 +68,14 @@ const Setup: React.FC = () => {
 
               <label className="block text-sm font-medium mt-3">PIN Parceiro 1</label>
               <input
-                type="password"
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={20}
+                placeholder="●●●●●●"
                 aria-label="PIN Parceiro 1"
                 value={p1pin}
-                onChange={(e) => setP1pin(e.target.value)}
+                onChange={(e) => setP1pin(e.target.value.replace(/\D/g, "").slice(0, 20))}
                 className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#5f2f89] transition"
                 required
                 minLength={4}
@@ -90,10 +94,14 @@ const Setup: React.FC = () => {
 
               <label className="block text-sm font-medium mt-3">PIN Parceiro 2</label>
               <input
-                type="password"
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={20}
+                placeholder="●●●●●●"
                 aria-label="PIN Parceiro 2"
                 value={p2pin}
-                onChange={(e) => setP2pin(e.target.value)}
+                onChange={(e) => setP2pin(e.target.value.replace(/\D/g, "").slice(0, 20))}
                 className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#5f2f89] transition"
                 required
                 minLength={4}

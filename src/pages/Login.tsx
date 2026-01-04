@@ -11,6 +11,12 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Load saved username once on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("username");
+    if (stored) setName(stored);
+  }, []);
+
   useEffect(() => {
     // If already logged in, redirect to calendar
     if (!loading && partner) {
@@ -23,12 +29,25 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       await login({ name, pin });
+      // save username so it appears next time
+      try {
+        localStorage.setItem("username", name);
+      } catch (err) {
+        // ignore storage errors
+      }
       // redirect back to original page if provided
       const from = (location.state as any)?.from?.pathname || "/calendar";
       navigate(from);
     } catch (err) {
       // errors are shown by the auth provider via toasts
     }
+  };
+
+  const clearUsername = () => {
+    setName("");
+    try {
+      localStorage.removeItem("username");
+    } catch (_) {}
   };
 
   return (
@@ -38,20 +57,37 @@ const Login: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
             <label className="block text-sm font-medium">Nome</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full border rounded px-2 py-1"
-            />
+            <div className="mt-1 flex items-center gap-2">
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="flex-1 w-full border rounded px-2 py-1"
+                aria-label="username"
+              />
+              <button
+                type="button"
+                onClick={clearUsername}
+                className="text-sm px-3 py-1 border rounded text-[#5f2f89] text-center hover:bg-[#5f2f89] hover:text-white transition"
+                aria-label="clear username"
+              >
+                Limpar
+              </button>
+            </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium">PIN</label>
             <input
               value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              type="password"
-              className="mt-1 w-full border rounded px-2 py-1"
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 20))}
+              type="tel"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={20}
+              autoComplete="one-time-code"
+              placeholder="●●●●●●"
+              aria-label="PIN code"
+              className="mt-1 w-full border rounded px-3 py-2 text-center text-lg tracking-widest"
             />
           </div>
 
