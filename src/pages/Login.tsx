@@ -56,7 +56,7 @@ const Login: React.FC = () => {
           </div>
 
           <div>
-            <button className="w-full bg-blue-600 text-white py-2 rounded">Entrar</button>
+            <button className="w-full bg-[#111827] text-white rounded-md hover:opacity-95 transition py-2">Entrar</button>
           </div>
         </form>
       </div>
