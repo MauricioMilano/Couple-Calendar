@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
@@ -39,21 +40,64 @@ app.use("/api/setup", setupRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/events", eventsRouter);
 
-// Serve manifest and service-worker and other assets from /public automatically
-const publicDir = path.join(process.cwd(), "dist");
+// Serve built assets from /dist
+const distDir = path.join(process.cwd(), "dist");
+app.use(express.static(distDir, { path : "/" }));
+
+// Also serve top-level PWA assets from /public so the service-worker and manifest are
+// available at the application root (required for SW scope and proper PWA behavior).
+const publicDir = path.join(process.cwd(), "public");
+
+// Serve service worker at the root and ensure it is not aggressively cached.
+app.get('/service-worker.js', (req, res, next) => {
+  const swPath = path.join(publicDir, 'service-worker.js');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  // Allow the service worker to control the entire origin if desired
+  res.setHeader('Service-Worker-Allowed', '/');
+  res.sendFile(swPath, (err) => {
+    if (err) next(err);
+  });
+});
+
+// Serve manifest.json from /manifest.json
+app.get('/manifest.json', (req, res, next) => {
+  const manifestPath = path.join(publicDir, 'manifest.json');
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(manifestPath, (err) => {
+    if (err) next(err);
+  });
+});
+
+// Serve favicon from public if present
+app.get('/favicon.ico', (req, res, next) => {
+  const fav = path.join(publicDir, 'favicon.ico');
+  res.sendFile(fav, (err) => {
+    if (err) next(err);
+  });
+});
+
+// Additionally, serve any other static files inside /public at the root when not
+// shadowed by /dist assets.
 app.use(express.static(publicDir));
 
-// Root handling: if no partners exist, serve setup.html, else serve index.html
+
+// Root handling: if no partners exist prefer serving a dedicated setup page when present.
+// If the static `public/setup.html` is not present (many installs use the React SPA for setup),
+// fall back to serving the SPA `index.html` so client-side routes like /setup work.
 import { partnersCount } from "./src/models/partners.js";
 
 app.get("/", async (req, res, next) => {
   try {
     const count = partnersCount();
-    if (count === 0) {
-      return res.sendFile(path.join(publicDir, "setup.html"));
-    } else {
-      return res.sendFile(path.join(publicDir, "index.html"));
+    const setupPath = path.join(publicDir, "setup.html");
+    const indexPath = path.join(publicDir, "index.html");
+
+    if (count === 0 && fs.existsSync(setupPath)) {
+      return res.sendFile(setupPath);
     }
+
+    // Default to SPA index.html (exists in public/) so the client app can handle /setup
+    return res.sendFile(indexPath);
   } catch (err) {
     next(err);
   }
@@ -65,11 +109,16 @@ app.use((req, res, next) => {
   if (req.method !== "GET") return next();
   if (req.path.startsWith("/api/")) return next();
 
-  const indexFile =
-    partnersCount() === 0
-      ? path.join(publicDir, "setup.html")
-      : path.join(publicDir, "index.html");
-  res.sendFile(indexFile);
+  const setupPath = path.join(publicDir, "setup.html");
+  const indexPath = path.join(publicDir, "index.html");
+
+  // If there is a static setup.html and the app is unconfigured, prefer that. Otherwise
+  // always serve the SPA index.html so client-side routes (e.g. /setup) work.
+  if (partnersCount() === 0 && fs.existsSync(setupPath)) {
+    return res.sendFile(setupPath);
+  }
+
+  return res.sendFile(indexPath);
 });
 
 app.use((err, req, res, next) => {

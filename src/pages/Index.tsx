@@ -51,7 +51,7 @@ const Index: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Calendário de Casal</h1>
+        <h1 className="text-4xl font-bold mb-4">Couple Calendar</h1>
         <p className="text-xl text-gray-600 mb-6">
           Gerencie eventos compartilhados com seu parceiro(a).
         </p>
