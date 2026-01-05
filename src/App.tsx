@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import Events from "./pages/Events";
 import Calendar from "./pages/Calendar";
 import Setup from "./pages/Setup";
 import { AuthProvider, useAuth } from "./context/AuthProvider";
@@ -14,7 +15,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
-const AuthRedirectToCalendar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AuthRedirectToEvents: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { partner, loading } = useAuth();
 
   if (loading) {
@@ -28,7 +29,7 @@ const AuthRedirectToCalendar: React.FC<{ children: React.ReactNode }> = ({ child
   }
 
   if (partner) {
-    return <Navigate to="/calendar" replace />;
+    return <Navigate to="/events" replace />;
   }
 
   return <>{children}</>;
@@ -46,23 +47,31 @@ const App = () => (
             <Route
               path="/"
               element={
-                <AuthRedirectToCalendar>
+                <AuthRedirectToEvents>
                   <Index />
-                </AuthRedirectToCalendar>
+                </AuthRedirectToEvents>
               }
             />
             <Route path="/login" element={<Login />} />
-            <Route
-              path="/calendar"
-              element={
-                <ProtectedRoute>
-                  <Calendar />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/setup" element={<Setup />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
+             <Route
+               path="/events"
+               element={
+                 <ProtectedRoute>
+                   <Events />
+                 </ProtectedRoute>
+               }
+             />
+             <Route
+               path="/calendar"
+               element={
+                 <ProtectedRoute>
+                   <Calendar />
+                 </ProtectedRoute>
+               }
+             />
+             <Route path="/setup" element={<Setup />} />
+             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

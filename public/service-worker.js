@@ -1,8 +1,9 @@
+// Simple service worker with safer fetch behavior: don't return index.html for arbitrary failed requests
 const CACHE_NAME = 'casalcal-v1';
 const CORE_ASSETS = [
-  '/',
-  '/index.html',
   '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -17,11 +18,26 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Only handle GET requests
   if (event.request.method !== 'GET') return;
+
+  // For navigation requests (loading pages), try network-first and fall back to cached index.html
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((res) => {
+          return res;
+        })
+        .catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
+
+  // For other requests, try cache first then network
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
-      return fetch(event.request).catch(() => caches.match('/index.html'));
+      return fetch(event.request);
     })
   );
 });

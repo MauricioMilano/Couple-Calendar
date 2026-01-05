@@ -18,9 +18,9 @@ const Login: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // If already logged in, redirect to calendar
+    // If already logged in, redirect to events
     if (!loading && partner) {
-      navigate("/calendar");
+      navigate("/events");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [partner, loading]);
@@ -36,7 +36,7 @@ const Login: React.FC = () => {
         // ignore storage errors
       }
       // redirect back to original page if provided
-      const from = (location.state as any)?.from?.pathname || "/calendar";
+      const from = (location.state as any)?.from?.pathname || "/events";
       navigate(from);
     } catch (err) {
       // errors are shown by the auth provider via toasts

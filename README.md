@@ -1,4 +1,4 @@
-# Calendário de Casal - Backend Prototype
+# Couple Calendar - Backend Prototype
 
 Este protótipo contém um backend Express que serve um PWA estático e fornece uma API em /api para setup, autenticação por PIN e gerenciamento de eventos (SQLite).
 

@@ -90,14 +90,20 @@ app.get("/", async (req, res, next) => {
   try {
     const count = partnersCount();
     const setupPath = path.join(publicDir, "setup.html");
-    const indexPath = path.join(publicDir, "index.html");
+    const publicIndexPath = path.join(publicDir, "index.html");
+    const distIndexPath = path.join(distDir, "index.html");
 
     if (count === 0 && fs.existsSync(setupPath)) {
       return res.sendFile(setupPath);
     }
 
-    // Default to SPA index.html (exists in public/) so the client app can handle /setup
-    return res.sendFile(indexPath);
+    // Prefer built SPA in /dist when available (this happens when running the production build).
+    // Otherwise fall back to public/index.html which is used during development without build.
+    if (fs.existsSync(distIndexPath)) {
+      return res.sendFile(distIndexPath);
+    }
+
+    return res.sendFile(publicIndexPath);
   } catch (err) {
     next(err);
   }
@@ -118,7 +124,14 @@ app.use((req, res, next) => {
     return res.sendFile(setupPath);
   }
 
-  return res.sendFile(indexPath);
+  // Prefer dist index when available (built SPA). Otherwise serve public index.html.
+  const distIndexPath = path.join(distDir, "index.html");
+  const publicIndexPath = path.join(publicDir, "index.html");
+  if (fs.existsSync(distIndexPath)) {
+    return res.sendFile(distIndexPath);
+  }
+
+  return res.sendFile(publicIndexPath);
 });
 
 app.use((err, req, res, next) => {

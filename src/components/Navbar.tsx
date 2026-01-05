@@ -21,6 +21,9 @@ const Navbar: React.FC = () => {
           <Link to="/" className="text-lg font-bold">
             Couple Calendar
           </Link>
+          <Link to="/events" className="text-sm text-gray-600 hover:underline">
+            Eventos
+          </Link>
           <Link to="/calendar" className="text-sm text-gray-600 hover:underline">
             Calendário
           </Link>
